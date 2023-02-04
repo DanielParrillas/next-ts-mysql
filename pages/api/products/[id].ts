@@ -1,8 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { pool } from "@/config/db";
+import { RowDataPacket } from "mysql2";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log(`query: ${req.query}`);
-  console.log(req.query);
-  console.log(`method: ${req.method}`);
-  res.status(200).json("Getting one product " + req.query.id);
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { id } = req.query;
+  const [result] = await pool.query<RowDataPacket[]>(
+    "SELECT * FROM product WHERE id = ?",
+    [id]
+  );
+  console.log(result);
+
+  return res.status(200).json(result[0]);
 }

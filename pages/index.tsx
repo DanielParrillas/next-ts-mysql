@@ -1,7 +1,8 @@
-import { ProductForm } from "@/components/ProductForm";
+import Layout from "@/components/Layout";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { Product } from "@/types";
+import Link from "next/link";
 
 interface HomeProps extends GetServerSideProps {
   products: Product[];
@@ -18,17 +19,21 @@ export default function Home({ products }: HomeProps) {
     }
   };
   return (
-    <div>
-      <ProductForm />
+    <Layout>
       {products.map((product) => (
-        <div>
-          <h1>{product.name}</h1>
-          <p>{product.description}</p>
-          <p>{product.price}</p>
-          <p>{getDateProduct(product)}</p>
-        </div>
+        <Link key={product.id} href={`/products/${product.id}`}>
+          <div
+            key={product.id}
+            className="border border-gray-200 shadow-md p-6 rounded mb-6"
+          >
+            <h1>{product.name}</h1>
+            <p>{product.description}</p>
+            <p>{product.price}</p>
+            <p>{getDateProduct(product)}</p>
+          </div>
+        </Link>
       ))}
-    </div>
+    </Layout>
   );
 }
 
