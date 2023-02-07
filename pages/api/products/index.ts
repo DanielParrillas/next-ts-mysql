@@ -16,26 +16,36 @@ export default async function handler(
 }
 
 const getProducts = async (req: NextApiRequest, res: NextApiResponse) => {
-  const [result] = await pool.query("SELECT * FROM product");
-  console.log(result);
-  return res.status(200).json(result);
+  try {
+    //throw new Error("Error intencional")
+    const [result] = await pool.query("SELECT * FROM product");
+    console.log(result);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error });
+  }
 };
 
 const saveProduct = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { name, description, price }: Product = req.body;
-  console.log("creating a product");
-  console.log(req.body);
-  const [result] = await pool.query<ResultSetHeader>(
-    "INSERT INTO product SET ?",
-    {
-      name,
-      description,
-      price,
-    }
-  );
+  try {
+    const { name, description, price }: Product = req.body;
+    console.log("creating a product");
+    console.log(req.body);
+    const [result] = await pool.query<ResultSetHeader>(
+      "INSERT INTO product SET ?",
+      {
+        name,
+        description,
+        price,
+      }
+    );
 
-  console.log(result);
-  return res
-    .status(200)
-    .json({ name, price, description, id: result.insertId });
+    console.log(result);
+    return res
+      .status(200)
+      .json({ name, price, description, id: result.insertId });
+  } catch (error) {
+    return res.status(500).json({ message: (error as Error).message });
+  }
 };

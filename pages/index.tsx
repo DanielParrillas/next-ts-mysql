@@ -3,6 +3,7 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { Product } from "@/types";
 import Link from "next/link";
+import ProductCard from "@/components/ProductCard";
 
 interface HomeProps extends GetServerSideProps {
   products: Product[];
@@ -11,28 +12,24 @@ interface HomeProps extends GetServerSideProps {
 export default function Home({ products }: HomeProps) {
   console.log(products);
 
-  const getDateProduct = (product: Product) => {
-    if (typeof product.created === undefined) {
-      return "";
-    } else {
-      return String(product.created);
-    }
+  const renderProducts = () => {
+    if (products.length === 0) return <h1>No products</h1>;
+
+    return products.map((product) => (
+      <ProductCard key={`product-card-${product.id}`} product={product} />
+    ));
   };
+
   return (
     <Layout>
-      {products.map((product) => (
-        <Link key={product.id} href={`/products/${product.id}`}>
-          <div
-            key={product.id}
-            className="border border-gray-200 shadow-md p-6 rounded mb-6"
-          >
-            <h1>{product.name}</h1>
-            <p>{product.description}</p>
-            <p>{product.price}</p>
-            <p>{getDateProduct(product)}</p>
-          </div>
-        </Link>
-      ))}
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+        {renderProducts()}
+      </div>
+      <Link href={"/new"}>
+        <button className="bg-green-500 text-white py-2 px-6 rounded hover:bg-green-600 duration-300">
+          New Product
+        </button>
+      </Link>
     </Layout>
   );
 }
